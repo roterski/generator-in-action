@@ -13,18 +13,25 @@ const setClock = (seconds, minutes, hours) => {
   setEl('sec', seconds)
 }
 
-function* timeGen(limits) {
-  let results = Array(limits.length).fill().map(() => 0);
-  for(let j = 0; j < limits.length; j += 1) {
-    for(let i = 0; i < limits[j]; i += 1) {
-      results[j] += 1;
-      yield results;
+function* timeGen(secondsInMinutes, minutesInHour, hoursInDay) {
+  let [second, minute, hour] = [0, 0, 0];
+
+  for(let h = 0; h < hoursInDay; h += 1) {
+    for(let m = 0; m < minutesInHour; m += 1) {
+      for(let s = 0; s < secondsInMinutes; s += 1) {
+        second += 1;
+        yield [second, minute, hour];
+      }
+      second = 0;
+      minute += 1;
     }
+    minute = 0;
+    hour += 1;
   }
 }
 
 const init = () => {
-  let generator = timeGen([60, 60, 12]);
+  let generator = timeGen(60, 60, 12);
   setClock(0, 0, 0);
 
   const timerId = setInterval(() => {
@@ -37,6 +44,6 @@ const init = () => {
       console.log(generated.value);
       setClock(...generated.value);
     }
-  }, 1000);
+  }, 100);
 };
 init();
